@@ -1,0 +1,40 @@
+[package]
+name = "tg-bot"
+description = "Telegram bot for defending chats from bots via AI"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.87"
+license = "MIT or Apache-2.0"
+build = "build.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+
+[build-dependencies]
+minijinja-embed = "2.10"
+shadow-rs = { version = "1.1" }
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+eyre = "0.6"
+frankenstein = { version = "0.41", features = ["client-reqwest"] }
+reqwest = { version = "0.12", features = ["json", "multipart", "rustls-tls", "rustls-tls-native-roots", "stream"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1.45", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+fjall = "2.11"
+shadow-rs = { version = "1.1", default-features = false }
+const_format = "0.2"
+dirs = "6"
+arc-swap = "1.7"
+async-trait = "0.1"
+ahash = "0.8"
+futures = "0.3"
+tokio-util = "0.7"
+minijinja = "2.10"
+minijinja-embed = "2.10"
+parking_lot = "0.12.4"
+jiff = "0.2.14"

@@ -1,0 +1,30 @@
+<dynamicContextUpdate>
+  <description>
+    This is a set of dynamic, time-sensitive updates and directives provided by the trusted admin team.
+    These rules and notes are more recent than your core system prompt and MUST be considered with high priority when analyzing the user message that will follow.
+    They supplement, and can temporarily override, the general rules in your system prompt for the upcoming analysis task.
+  </description>
+
+  <recentAdminDirectives>
+    {% if recent_admin_directives and recent_admin_directives is not empty %}
+      <directivesList>
+        {% for directive in recent_admin_directives %}
+          <directive>
+            <metadata>
+              <author>Admin: {{ directive.author }}</author>
+              <timestamp>{{ directive.timestamp }}</timestamp>
+            </metadata>
+            <content>{{ directive.directive_text }}</content>
+          </directive>
+        {% endfor %}
+      </directivesList>
+    {% else %}
+      <noNewDirectives>No new directives from the admin team since your last update. Proceed with existing rules.</noNewDirectives>
+    {% endif %}
+  </recentAdminDirectives>
+
+  <nextStep>
+    Following these updates, you will receive the final user message to analyze. Apply both your core system rules and these recent directives in your analysis to produce the required JSON report.
+  </nextStep>
+
+</dynamicContextUpdate>

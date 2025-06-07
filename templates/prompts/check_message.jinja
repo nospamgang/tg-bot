@@ -1,0 +1,48 @@
+<aiMessageAnalysisInstruction>
+  <description>
+    This instruction set guides the AI in analyzing a user-generated message and associated sender information
+    to identify potential policy violations, scams, or other defined issues.
+    The AI should use the provided dynamic data
+    in conjunction with its configured knowledge base of rules and patterns.
+    The AI MUST generate all human-readable text in the output (e.g., 'detailedReasoning') in the language specified in the 'outputFormat.language' field.
+  </description>
+
+  <inputData>
+    <message>
+      <text>{{ original_message_text }}</text>
+    </message>
+    <sender>
+      <accountName>{{ user_account_name }}</accountName>
+      {% if user_account_description %}
+      <accountDescription>{{ user_account_description }}</accountDescription>
+      {% endif %}
+      {% if user_account_join_date %}
+      <accountJoinDate>{{ user_account_join_date }}</accountJoinDate>
+      {% endif %}
+    </sender>
+  </inputData>
+
+  <analysisTasks>
+    <task name="ContentAnalysis">
+      <objective>Evaluate 'inputData.message.text' against all configured content policies and threat models.</objective>
+      <rulesetReference>GlobalContentPolicy</rulesetReference>
+    </task>
+    <task name="SenderProfileAssessment">
+      <objective>Assess 'inputData.sender' information for indicators of suspicious or malicious intent.</objective>
+      <rulesetReference>SenderProfilePolicy</rulesetReference>
+    </task>
+  </analysisTasks>
+
+  <outputFormat>
+    <type>JSON</type>
+    <language>{{ output_language }}</language>
+    <schema>
+      <field name="assessmentOutcome" type="enum" values="['FLAG', 'PASS']" description="The final verdict of the analysis. This field MUST be present and is the primary conclusion."/>
+      <field name="primaryReason" type="string" description="Main category for the flag. Localized based on 'output_language'. Returns null if assessmentOutcome is 'PASS'."/>
+      <field name="detailedReasoning" type="text" description="A concise, bullet-point summary (max 3 points). Localized based on 'output_language'. Returns null if assessmentOutcome is 'PASS'."/>
+      <field name="violatedPolicies" type="array" items="string" description="List of specific policy identifiers violated. Returns empty array if assessmentOutcome is 'PASS'."/>
+      <field name="confidenceScore" type="integer" range="0-100" description="AI's confidence in its assessment, represented as a whole number from 0 to 100."/>
+      <field name="suggestedAction" type="enum" values="['ADMIN_REVIEW_URGENT', 'ADMIN_REVIEW_NORMAL', 'LOG_ONLY', 'NO_ACTION']" description="Recommended next step."/>
+    </schema>
+  </outputFormat>
+</aiMessageAnalysisInstruction>
