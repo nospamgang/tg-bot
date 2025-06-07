@@ -51,4 +51,80 @@ impl<'a> MessageManager<'a> {
             })
             .expect("failed to render help message")
     }
+
+    pub fn cas(&self, lang: Language) -> String {
+        let template_name = format!("messages/cas_{}.jinja", lang.as_identifier());
+
+        self.env
+            .get_template(&template_name)
+            .expect("cas_{lang}.jinja not found")
+            .render(context! {})
+            .expect("failed to render cas message")
+    }
+
+    pub fn clear_injects(&self, lang: Language) -> String {
+        let template_name = format!("messages/clear_injects_{}.jinja", lang.as_identifier());
+
+        self.env
+            .get_template(&template_name)
+            .expect("clear_injects_{lang}.jinja not found")
+            .render(context! {})
+            .expect("failed to render clear_injects message")
+    }
+
+    pub fn command_usage(&self, lang: Language, command_schema: impl AsRef<str>) -> String {
+        let command_schema = command_schema.as_ref();
+
+        let template_name = format!("messages/command_usage_{}.jinja", lang.as_identifier());
+
+        self.env
+            .get_template(&template_name)
+            .expect("command_usage_{lang}.jinja not found")
+            .render(context! { command_schema })
+            .expect("failed to render command_usage message")
+    }
+
+    pub fn inject(&self, lang: Language) -> String {
+        let template_name = format!("messages/inject_{}.jinja", lang.as_identifier());
+
+        self.env
+            .get_template(&template_name)
+            .expect("inject_{lang}.jinja not found")
+            .render(context! {})
+            .expect("failed to render inject message")
+    }
+
+    pub fn set_lang(&self, lang: Language, new_language: impl AsRef<str>) -> String {
+        let new_language = new_language.as_ref();
+
+        let template_name = format!("messages/set_lang_{}.jinja", lang.as_identifier());
+
+        self.env
+            .get_template(&template_name)
+            .expect("set_lang_{lang}.jinja not found")
+            .render(context! { new_language })
+            .expect("failed to render set_lang message")
+    }
+
+    pub fn set_mode(&self, lang: Language, new_mode: impl AsRef<str>) -> String {
+        let new_mode = new_mode.as_ref();
+
+        let template_name = format!("messages/set_mode_{}.jinja", lang.as_identifier());
+
+        self.env
+            .get_template(&template_name)
+            .expect("set_mode_{lang}.jinja not found")
+            .render(context! { new_mode })
+            .expect("failed to render set_mode message")
+    }
+
+    pub fn toggle_inject(&self, lang: Language, activated: bool) -> String {
+        let template_name = format!("messages/toggle_inject_{}.jinja", lang.as_identifier());
+
+        self.env
+            .get_template(&template_name)
+            .expect("toggle_inject_{lang}.jinja not found")
+            .render(context! { activated })
+            .expect("failed to render toggle_inject message")
+    }
 }

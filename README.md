@@ -62,7 +62,6 @@ Pull Requests are welcome!
 
 * **Better Admin Injects**: Implement a more robust system for managing admin directives, perhaps with expiry times or unique IDs.
 * **Fine-Grained Admin Access**: Implement a more robust system for managing what admins have access to the bot's settings.
-* **Command Localization**: Add localized variants for commands.
 * **Webhooks Support**: Add an alternative to long polling by implementing support for Telegram Bot API webhooks.
 * **Containerization**: Create a `Dockerfile` and `docker-compose.yml` for easy deployment.
 * **Systemd Service**: Provide a `systemd` service file for running the bot as a background process on Linux.

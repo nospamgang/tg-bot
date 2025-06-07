@@ -6,6 +6,7 @@ use crate::{
     service::{
         PermissionLevel,
         handlers::commands::{Command, CommandContext},
+        messages::MessageManager,
         state::{Language, ServiceState},
     },
     telegram::bot::Bot,
@@ -14,11 +15,20 @@ use crate::{
 pub struct SetLang {
     bot: Arc<Bot>,
     state: Arc<ServiceState>,
+    message_mgr: Arc<MessageManager<'static>>,
 }
 
 impl SetLang {
-    pub fn new(bot: Arc<Bot>, state: Arc<ServiceState>) -> Self {
-        Self { bot, state }
+    pub fn new(
+        bot: Arc<Bot>,
+        message_mgr: Arc<MessageManager<'static>>,
+        state: Arc<ServiceState>,
+    ) -> Self {
+        Self {
+            bot,
+            state,
+            message_mgr,
+        }
     }
 }
 
@@ -33,14 +43,17 @@ impl Command for SetLang {
     }
 
     async fn execute(&self, ctx: CommandContext) -> eyre::Result<()> {
-        let chat_stats = self.state.get_chat_state(ctx.message.chat.id);
+        let chat_state = self.state.get_chat_state(ctx.message.chat.id);
 
         let reply_text = if let Ok(new_lang) = Language::from_str(&ctx.args_raw.trim()) {
-            *chat_stats.language.write() = new_lang;
+            *chat_state.language.write() = new_lang;
 
-            format!("Language set to {}", new_lang.as_identifier())
+            self.message_mgr
+                .set_lang(new_lang, new_lang.as_identifier())
         } else {
-            "Usage: /set_lang [en|ru]".to_string()
+            let lang = *chat_state.language.read();
+
+            self.message_mgr.command_usage(lang, "/set_lang [en|ru]")
         };
 
         self.bot

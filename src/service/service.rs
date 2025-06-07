@@ -99,11 +99,27 @@ impl Service {
 
         let commands: Vec<Box<dyn Command + 'static>> = vec![
             Box::new(Help::new(bot.clone(), message_mgr.clone(), state.clone())),
-            Box::new(SetMode::new(bot.clone(), state.clone())),
-            Box::new(SetLang::new(bot.clone(), state.clone())),
-            Box::new(Inject::new(bot.clone(), state.clone())),
-            Box::new(ToggleInject::new(bot.clone(), state.clone())),
-            Box::new(ClearInjects::new(bot.clone(), state.clone())),
+            Box::new(SetMode::new(
+                bot.clone(),
+                message_mgr.clone(),
+                state.clone(),
+            )),
+            Box::new(SetLang::new(
+                bot.clone(),
+                message_mgr.clone(),
+                state.clone(),
+            )),
+            Box::new(Inject::new(bot.clone(), message_mgr.clone(), state.clone())),
+            Box::new(ToggleInject::new(
+                bot.clone(),
+                message_mgr.clone(),
+                state.clone(),
+            )),
+            Box::new(ClearInjects::new(
+                bot.clone(),
+                message_mgr.clone(),
+                state.clone(),
+            )),
             Box::new(Status::new(bot.clone(), state.clone())),
         ];
 

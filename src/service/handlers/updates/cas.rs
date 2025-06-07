@@ -50,7 +50,7 @@ impl UpdateHandler for CasBan {
                 lang,
                 user_id,
                 "CAS Ban",
-                "User is globally banned by the Combot Anti-Spam system",
+                self.message_mgr.cas(lang),
             );
 
             self.bot.send_message(message.chat.id, reply).await?;

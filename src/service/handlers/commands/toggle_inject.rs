@@ -6,6 +6,7 @@ use crate::{
     service::{
         PermissionLevel,
         handlers::commands::{Command, CommandContext},
+        messages::MessageManager,
         state::ServiceState,
     },
     telegram::bot::Bot,
@@ -14,11 +15,20 @@ use crate::{
 pub struct ToggleInject {
     bot: Arc<Bot>,
     state: Arc<ServiceState>,
+    message_mgr: Arc<MessageManager<'static>>,
 }
 
 impl ToggleInject {
-    pub fn new(bot: Arc<Bot>, state: Arc<ServiceState>) -> Self {
-        Self { bot, state }
+    pub fn new(
+        bot: Arc<Bot>,
+        message_mgr: Arc<MessageManager<'static>>,
+        state: Arc<ServiceState>,
+    ) -> Self {
+        Self {
+            bot,
+            state,
+            message_mgr,
+        }
     }
 }
 
@@ -39,13 +49,8 @@ impl Command for ToggleInject {
             let mut is_active = chat_state.admin_prompt_injections_active.write();
             *is_active = !*is_active;
 
-            let status_str = if *is_active {
-                "activated"
-            } else {
-                "deactivated"
-            };
-
-            format!("Admin injections {status_str}.")
+            let lang = *chat_state.language.read();
+            self.message_mgr.toggle_inject(lang, *is_active)
         };
 
         self.bot

@@ -6,6 +6,7 @@ use crate::{
     service::{
         PermissionLevel,
         handlers::commands::{Command, CommandContext},
+        messages::MessageManager,
         state::ServiceState,
     },
     telegram::bot::Bot,
@@ -14,11 +15,20 @@ use crate::{
 pub struct ClearInjects {
     bot: Arc<Bot>,
     state: Arc<ServiceState>,
+    message_mgr: Arc<MessageManager<'static>>,
 }
 
 impl ClearInjects {
-    pub fn new(bot: Arc<Bot>, state: Arc<ServiceState>) -> Self {
-        Self { bot, state }
+    pub fn new(
+        bot: Arc<Bot>,
+        message_mgr: Arc<MessageManager<'static>>,
+        state: Arc<ServiceState>,
+    ) -> Self {
+        Self {
+            bot,
+            state,
+            message_mgr,
+        }
     }
 }
 
@@ -36,12 +46,12 @@ impl Command for ClearInjects {
         let chat_state = self.state.get_chat_state(ctx.message.chat.id);
         chat_state.admin_prompt_injections.write().clear();
 
+        let chat_state = self.state.get_chat_state(ctx.message.chat.id);
+        let lang = *chat_state.language.read();
+        let text = self.message_mgr.clear_injects(lang);
+
         self.bot
-            .reply(
-                ctx.message.chat.id,
-                ctx.message.message_id,
-                "All admin directives cleared.".to_string(),
-            )
+            .reply(ctx.message.chat.id, ctx.message.message_id, text)
             .await?;
 
         Ok(())
