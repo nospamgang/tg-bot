@@ -67,7 +67,6 @@ Pull Requests are welcome!
 * **Better Admin Injects**: Implement a more robust system for managing admin directives, perhaps with expiry times or unique IDs.
 * **Fine-Grained Admin Access**: Implement a more robust system for managing what admins have access to the bot's settings.
 * **Webhooks Support**: Add an alternative to long polling by implementing support for Telegram Bot API webhooks.
-* **Systemd Service**: Provide a `systemd` service file for running the bot as a background process on Linux.
 * **More AI Providers**: Add direct support for other AI providers (non-priority).
 * **Local AI**: Add support for local AI models via `ollama` or similar frameworks (non-priority).
 
