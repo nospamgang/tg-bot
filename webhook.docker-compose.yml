@@ -1,0 +1,20 @@
+services:
+  tg-bot:
+    build: .
+    container_name: tg-ai-moderator-bot-webhook
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - tg-bot-data:/data
+    ports:
+      # Map host port 8080 to container port 8080 for the webhook
+      - "127.0.0.1:8080:8080"
+    command: >
+      /usr/local/bin/tg-bot
+      --db-file /data/state.fjall
+      --webhook-url "https://your.public.domain/path/for/webhook"
+      --webhook-listen-addr "0.0.0.0:8080"
+
+volumes:
+  tg-bot-data:

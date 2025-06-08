@@ -152,60 +152,13 @@ impl Service {
         }
     }
 
-    pub async fn start(self: Arc<Self>) -> eyre::Result<()> {
-        let s_db = self.clone();
-        tokio::spawn(async move {
-            let mut interval = tokio::time::interval(STATE_SAVE_INTERVAL);
+    pub fn bot(&self) -> &Arc<Bot> {
+        &self.bot
+    }
 
-            loop {
-                interval.tick().await;
-
-                if let Err(e) = s_db.save_state_to_db().await {
-                    error!("Failed to save state to DB: {e}");
-                }
-            }
-        });
-
-        let s_cas = self.clone();
-        tokio::spawn(async move {
-            let mut interval = tokio::time::interval(CAS_REFRESH_INTERVAL);
-
-            loop {
-                interval.tick().await;
-                if let Err(e) = s_cas.update_cas_banned_ids().await {
-                    error!("Failed to update CAS list: {e}");
-                }
-            }
-        });
-
+    pub async fn start_polling(self: Arc<Self>) -> eyre::Result<()> {
         info!("Starting main polling loop...");
 
-        self.start_tg_update_handler().await
-    }
-
-    async fn save_state_to_db(&self) -> eyre::Result<()> {
-        let state_snapshot = SaveableServiceState::from_ref(&self.state);
-        let serialized = serde_json::to_vec(&state_snapshot)?;
-        self.state_partition
-            .insert(STATE_PARTITION_KEY, serialized)?;
-
-        let db_clone = self.db.clone();
-        tokio::task::spawn_blocking(move || db_clone.persist(PersistMode::SyncAll)).await??;
-
-        debug!("Service state saved to DB.");
-        Ok(())
-    }
-
-    pub async fn update_cas_banned_ids(&self) -> eyre::Result<()> {
-        info!("Fetching full CAS banned list...");
-        let new_list = self.cas.fetch_full_list().await?;
-
-        self.state.cas_banned_ids.store(Arc::new(new_list));
-
-        Ok(())
-    }
-
-    async fn start_tg_update_handler(self: Arc<Self>) -> eyre::Result<()> {
         let mut offset = 0;
 
         loop {
@@ -241,7 +194,56 @@ impl Service {
         }
     }
 
-    async fn dispatch_update(self: Arc<Self>, update: Update) -> eyre::Result<()> {
+    pub fn spawn_background_tasks(self: &Arc<Self>) {
+        let s_db = self.clone();
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(STATE_SAVE_INTERVAL);
+
+            loop {
+                interval.tick().await;
+
+                if let Err(e) = s_db.save_state_to_db().await {
+                    error!("Failed to save state to DB: {e}");
+                }
+            }
+        });
+
+        let s_cas = self.clone();
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(CAS_REFRESH_INTERVAL);
+
+            loop {
+                interval.tick().await;
+                if let Err(e) = s_cas.update_cas_banned_ids().await {
+                    error!("Failed to update CAS list: {e}");
+                }
+            }
+        });
+    }
+
+    async fn save_state_to_db(&self) -> eyre::Result<()> {
+        let state_snapshot = SaveableServiceState::from_ref(&self.state);
+        let serialized = serde_json::to_vec(&state_snapshot)?;
+        self.state_partition
+            .insert(STATE_PARTITION_KEY, serialized)?;
+
+        let db_clone = self.db.clone();
+        tokio::task::spawn_blocking(move || db_clone.persist(PersistMode::SyncAll)).await??;
+
+        debug!("Service state saved to DB.");
+        Ok(())
+    }
+
+    pub async fn update_cas_banned_ids(&self) -> eyre::Result<()> {
+        info!("Fetching full CAS banned list...");
+        let new_list = self.cas.fetch_full_list().await?;
+
+        self.state.cas_banned_ids.store(Arc::new(new_list));
+
+        Ok(())
+    }
+
+    pub async fn dispatch_update(self: Arc<Self>, update: Update) -> eyre::Result<()> {
         let msg = if let UpdateContent::Message(msg) = update.content {
             msg
         } else {

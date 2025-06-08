@@ -1,7 +1,7 @@
 services:
   tg-bot:
     build: .
-    container_name: tg-ai-moderator-bot
+    container_name: tg-ai-moderator-bot-polling
     restart: unless-stopped
     env_file:
       - .env

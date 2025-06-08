@@ -6,9 +6,9 @@ use frankenstein::{
     client_reqwest::Bot as FrankenBot,
     methods::{
         BanChatMemberParams, DeleteMessageParams, GetChatAdministratorsParams, GetUpdatesParams,
-        SendMessageParams,
+        SendMessageParams, SetWebhookParams,
     },
-    types::{ChatMember, Message, ReplyParameters},
+    types::{AllowedUpdate, ChatMember, Message, ReplyParameters},
     updates::Update,
 };
 use reqwest::Client as ReqwestClient;
@@ -37,6 +37,26 @@ impl Bot {
             .build();
 
         Self { api }
+    }
+
+    pub async fn set_webhook(
+        &self,
+        allowed_updates: Vec<AllowedUpdate>,
+        url: impl Into<String>,
+        secret_token: Option<String>,
+    ) -> eyre::Result<()> {
+        self.api
+            .set_webhook(
+                &SetWebhookParams::builder()
+                    .url(url)
+                    .maybe_secret_token(secret_token)
+                    .allowed_updates(allowed_updates)
+                    .build(),
+            )
+            .await
+            .wrap_err("unable to set webhook")?;
+
+        Ok(())
     }
 
     pub async fn updates(&self, params: GetUpdatesParams) -> eyre::Result<Vec<Update>> {

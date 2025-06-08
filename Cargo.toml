@@ -38,3 +38,5 @@ minijinja = "2.10"
 minijinja-embed = "2.10"
 parking_lot = "0.12.4"
 jiff = "0.2.14"
+axum = { version = "0.8.4", features = ["form", "http1", "http2", "json", "matched-path", "original-uri", "query", "tokio"], default-features = false }
+url = "2.5.4"
