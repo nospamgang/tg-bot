@@ -1,0 +1,12 @@
+services:
+  tg-bot:
+    build: .
+    container_name: tg-ai-moderator-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - tg-bot-data:/data
+
+volumes:
+  tg-bot-data:
