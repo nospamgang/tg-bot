@@ -23,7 +23,7 @@ pub fn fetch_from_file(
                     continue;
                 }
 
-                // technically we are hitting an edge-case when the required env variable
+                // technically we are hitting an edge case when the required env variable
                 // if its name has a `=` (like `"KE=EY"="VALUE"`) in it, but iirc
                 // there are no real cases for this
                 let (name_raw, value_raw) = line
