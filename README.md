@@ -60,8 +60,8 @@ cargo run --release -- \
     --webhook-url "https://your.public.domain/your-webhook-path" \
     --webhook-listen-addr "0.0.0.0:8080"
 ```
-*   `--webhook-url`: The full, public URL that Telegram will send updates to.
-*   `--webhook-listen-addr`: The internal IP and port the bot's server will bind to.
+* `--webhook-url`: The full, public URL that Telegram will send updates to.
+* `--webhook-listen-addr`: The internal IP and port the bot's server will bind to.
 
 ### 4. Deployment with Docker
 
@@ -91,6 +91,7 @@ Pull Requests are welcome!
 
 * **Better Admin Injects**: Implement a more robust system for managing admin directives, perhaps with expiry times or unique IDs.
 * **Fine-Grained Admin Access**: Implement a system for managing which admins have access to the bot's settings.
+* **Back-off**: Implement time-based restriction (e.g. for the first 24 hours) preventing users from sending media, links, or forwards.
 * **More AI Providers**: Add direct support for other AI providers (non-priority).
 * **Local AI**: Add support for local AI models via `ollama` or similar frameworks (non-priority).
 
